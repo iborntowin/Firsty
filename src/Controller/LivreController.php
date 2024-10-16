@@ -24,6 +24,14 @@ final class LivreController extends AbstractController
         $this->authorRepository = $authorRepository;
     }
 
+
+    #[Route('/livre', name: 'app_livre', methods: ['GET'])]
+public function goToLivre(): Response
+{
+    return $this->redirectToRoute('app_livre_index');
+}
+
+
     #[Route(name: 'app_livre_index', methods: ['GET'])]
     public function index(LivreRepository $livreRepository): Response
     {
@@ -33,7 +41,6 @@ final class LivreController extends AbstractController
     }
 
     #[Route('/new', name: 'app_livre_new', methods: ['GET', 'POST'])]
-    #[Route('/new', name: 'app_livre_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $livre = new Livre();
@@ -41,31 +48,24 @@ final class LivreController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Get the uploaded file
             $file = $form->get('picture')->getData();
 
             if ($file) {
-                // Generate a unique file name
                 $newFilename = uniqid() . '.' . $file->guessExtension();
 
-                // Move the file to the directory where books are stored
                 try {
                     $file->move(
-                        $this->getParameter('pictures_directory'), // Ensure this parameter is defined correctly
+                        $this->getParameter('pictures_directory'), 
                         $newFilename
                     );
-                    // Set the new filename to the livre entity
                     $livre->setPicture($newFilename);
                 } catch (\Exception $e) {
-                    // Log the error or display a message
                     $this->addFlash('error', 'Error uploading file: ' . $e->getMessage());
                 }
             } else {
-                // Handle the case where no file was uploaded
                 $this->addFlash('error', 'No file was uploaded.');
             }
 
-            // Persist the entity after setting the picture
             $entityManager->persist($livre);
             $entityManager->flush();
 
@@ -77,10 +77,8 @@ final class LivreController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
-    
 
-
-    #[Route('/{id}', name: 'app_livre_show', methods: ['GET'])]
+    #[Route('/{ref}', name: 'app_livre_show', methods: ['GET'])]
     public function show(Livre $livre): Response
     {
         return $this->render('livre/show.html.twig', [
@@ -88,7 +86,7 @@ final class LivreController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_livre_edit', methods: ['GET', 'POST'])]
+    #[Route('/edit/{ref}', name: 'app_livre_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Livre $livre, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(LivreType::class, $livre);
@@ -115,11 +113,9 @@ final class LivreController extends AbstractController
         ]);
     }
 
-    
     #[Route('/{ref}', name: 'app_livre_delete', methods: ['POST'])]
     public function delete(Request $request, Livre $livre, EntityManagerInterface $entityManager): Response
     {
-        // Check the CSRF token for security
         if ($this->isCsrfTokenValid('delete' . $livre->getRef(), $request->request->get('_csrf_token'))) {
             $entityManager->remove($livre);
             $entityManager->flush();
@@ -131,6 +127,4 @@ final class LivreController extends AbstractController
     
         return $this->redirectToRoute('app_livre_index', [], Response::HTTP_SEE_OTHER);
     }
-    
-
 }

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/path/to/your/styles.css">
     <style>
         body {
-            background-color: #f0f4f8; /* Soft light background */
+            background-color: #f0f4f8;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 20px;
@@ -16,7 +16,7 @@
         }
 
         .container {
-            background-color: #ffffff; /* White container */
+            background-color: #ffffff;
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -26,7 +26,7 @@
 
         h1 {
             font-size: 2.5rem;
-            color: #2c3e50; /* Darker color for the heading */
+            color: #2c3e50;
             text-align: center;
             margin-bottom: 20px;
         }
@@ -39,11 +39,12 @@
         }
 
         table thead {
-            background-color: #2980b9; /* New blue for the header */
+            background-color: #2980b9;
             color: white;
         }
 
-        table th, table td {
+        table th,
+        table td {
             padding: 15px;
             text-align: left;
         }
@@ -53,40 +54,56 @@
         }
 
         table tbody tr:nth-of-type(even) {
-            background-color: #ecf0f1; /* Light gray for even rows */
+            background-color: #ecf0f1;
         }
 
         table tbody tr:hover {
-            background-color: #bdc3c7; /* Slightly darker on hover */
+            background-color: #bdc3c7;
         }
 
         img {
             border-radius: 5px;
-            max-width: 80px; /* Smaller image size */
+            max-width: 80px;
             height: auto;
         }
 
         .button-container {
             text-align: center;
-            margin: 30px 0;
+            margin: 20px 0;
         }
 
         .btn-custom-container {
-            background-color: #27ae60; /* Green button */
-            color: white;
-            padding: 12px 25px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 1rem;
-            transition: background-color 0.3s ease;
+            display: inline-block;
+            background-color: white;
+            color: #007bff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            margin: 0 10px;
+            width: 200px;
         }
 
         .btn-custom-container:hover {
-            background-color: #219653; /* Darker green on hover */
+            background-color: #C0E8D5;
+            color: red;
+        }
+
+        .btn-text {
+            font-size: 1.2rem;
+            color: #007bff;
+            text-decoration: none;
+            border: none;
+            background: none;
+            cursor: pointer;
+            display: block;
+            width: 100%;
         }
 
         .delete-button {
-            background-color: #e74c3c; /* Red for delete button */
+            background-color: #e74c3c;
             color: white;
             border: none;
             padding: 10px 15px;
@@ -97,7 +114,7 @@
         }
 
         .delete-button:hover {
-            background-color: #c0392b; /* Darker red on hover */
+            background-color: #c0392b;
         }
 
         .summary {
@@ -106,6 +123,26 @@
             font-size: 1.1rem;
             color: #555;
         }
+
+        .home-button {
+            display: inline-block;
+            background-color: white;
+            color: #007bff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            font-size: 1.2rem;
+            text-align: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .home-button:hover {
+            background-color: #C0E8D5;
+            color: red;
+        }
+
     </style>
 </head>
 
@@ -131,7 +168,7 @@
                 <tr>
                     <td>{{ author.id }}</td>
                     <td>
-                        <img src="{{ asset(author.picture) }}" alt="{{ author.username }}" width="120" height="100">
+                        <img src="{{ asset('assets/images/authors/' ~ author.picture) }}" alt="{{ author.username }}" width="120" height="100">
                     </td>
                     <td>{{ author.username | upper }}</td>
                     <td>{{ author.email }}</td>
@@ -157,6 +194,7 @@
             <a href="{{ path('author_add') }}" class="btn-custom-container">
                 <span class="btn-text">Ajouter un Auteur</span>
             </a>
+            <a href="{{ path('hello_world') }}" class="home-button">Retour à la Page d'Accueil</a>
         </div>
     </main>
 </body>

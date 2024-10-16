@@ -38,7 +38,7 @@
         }
 
         table thead tr {
-            background-color: #007bff;
+            background-color: #2980b9;
             color: #ffffff;
             text-align: left;
         }
@@ -60,9 +60,10 @@
         }
 
         .button-container {
-            margin: 20px 0;
             display: flex;
             justify-content: center;
+            gap: 20px;
+            margin-top: 50px;
         }
 
         .btn-custom-container {
@@ -111,15 +112,31 @@
             font-size: 1rem;
             color: #333;
         }
+
+       .home-button {
+    display: inline-block;
+    background-color: white;
+    color: #007bff;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+    font-size: 1.5rem;
+    text-align: center;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.home-button:hover {
+    background-color: #C0E8D5;
+    color: red;
+}
+
     </style>
-<div class="container">
+    
+    <div class="container">
         <h1>Liste des Livres</h1>
 
-        <div class="button-container">
-            <a href="{{ path('app_livre_new') }}" class="btn-custom-container">
-                <span class="btn-text">Ajouter un Nouveau Livre</span>
-            </a>
-        </div>
+       
 
         <table>
             <thead>
@@ -146,20 +163,29 @@
                         <td>{{ livre.title }}</td>
                         <td>{{ livre.author.username }}</td>
                         <td>{{ livre.nbrPage }}</td>
-                      <td>
-    <a href="{{ path('app_livre_show', {'id': livre.ref}) }}" class="details-link">Voir</a>
-    <a href="{{ path('app_livre_edit', {'id': livre.ref}) }}" class="details-link">Modifier</a>
-    <form method="post" action="{{ path('app_livre_delete', {'ref': livre.ref}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet article ?');" style="display:inline;">
-        <input type="hidden" name="_csrf_token" value="{{ csrf_token('delete' ~ livre.ref) }}">
-        <button type="submit" class="delete-button">Supprimer</button>
-    </form>
-</td>
-
-
-
+                        <td>
+                            <a href="{{ path('app_livre_show', {'ref': livre.ref}) }}" class="details-link">Voir</a>
+                            <a href="{{ path('app_livre_edit', {'ref': livre.ref}) }}" class="details-link">Modifier</a>
+                            <form method="post" action="{{ path('app_livre_delete', {'ref': livre.ref}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet article ?');" style="display:inline;">
+                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('delete' ~ livre.ref) }}">
+                                <button type="submit" class="delete-button">Supprimer</button>
+                            </form>
+                        </td>
+                    </tr>
                 {% endfor %}
             </tbody>
         </table>
+
+         <div class="button-container">
+            <a href="{{ path('app_livre_new') }}" class="btn-custom-container">
+                <span class="btn-text">Ajouter un Nouveau Livre</span>
+            </a>
+        </div>
+
+        <div class="button-container">
+    <a href="{{ path('hello_world') }}" class="home-button">Retour à la Page d'Accueil</a>
+</div>
+
 
         <div class="summary">
             <p>Le nombre de livres est : {{ livres|length }}</p>

@@ -26,8 +26,6 @@
             font-size: 2.5rem;
             color: #007bff;
         }
-
-        
         p {
             font-size: 1.2rem;
             color: #6c757d;
@@ -47,11 +45,10 @@
             text-align: center;
             cursor: pointer;
             transition: background-color 0.3s ease;
-            
         }
         .btn-custom-container:hover {
             background-color: #C0E8D5;
-            color:red;
+            color: red;
         }
         .btn-custom-container form {
             margin: 0;
@@ -64,7 +61,6 @@
             background: none; 
             cursor: pointer; 
         }
-        
     </style>
 </head>
 <body>
@@ -78,14 +74,14 @@
         <div class="btn-custom-container">
             <form action="{{ path('goToAuthors') }}" method="POST">
                 <button type="submit" class="btn-text">List Authors</button>
-                
             </form>
-
-            
         </div>
-  
 
- 
+        <div class="btn-custom-container">
+            <form action="{{ path('app_livre') }}" method="GET">
+                <button type="submit" class="btn-text">List Livres</button>
+            </form>
+        </div>
     </div>
 
 </body>

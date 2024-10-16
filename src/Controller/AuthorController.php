@@ -39,34 +39,35 @@ class AuthorController extends AbstractController
         ]);
     }
 
+
     #[Route('/author/delete/{id}', name: 'author_delete', methods: ['POST'])]
-    public function deleteAuthor(Request $request, int $id): Response
-    {
-        // Verify CSRF token
-        $token = $request->request->get('_csrf_token');
-        if (!$this->isCsrfTokenValid('delete' . $id, $token)) {
-            throw new InvalidCsrfTokenException();
-        }
-
-        // Find the author by ID
-        $author = $this->authorRepository->find($id);
-        if (!$author) {
-            throw $this->createNotFoundException('Author not found');
-        }
-
-        // Remove the author
-        $this->entityManager->remove($author);
-        $this->entityManager->flush();
-
-        // Redirect after deletion
-        return $this->redirectToRoute('list_authors');
+public function deleteAuthor(Request $request, int $id): Response
+{
+    // Verify CSRF token
+    $token = $request->request->get('_csrf_token');
+    if (!$this->isCsrfTokenValid('delete' . $id, $token)) {
+        throw new InvalidCsrfTokenException();
     }
 
-    #[Route('/goToAuthors', name: 'goToAuthors')]
-    public function goToAuthors(): Response
-    {
-        return $this->redirectToRoute('list_authors');
+    // Find the author by ID
+    $author = $this->authorRepository->find($id);
+    if (!$author) {
+        throw $this->createNotFoundException('Author not found');
     }
+
+    // Remove related books
+    foreach ($author->getLivres() as $livre) {
+        $this->entityManager->remove($livre);
+    }
+
+    // Remove the author
+    $this->entityManager->remove($author);
+    $this->entityManager->flush();
+
+    // Redirect after deletion
+    return $this->redirectToRoute('list_authors');
+}
+
     
     #[Route('/listauthors', name: 'list_authors')]
     public function listAuthors(): Response
@@ -78,23 +79,50 @@ class AuthorController extends AbstractController
     }
 
     #[Route('/author/add', name: 'author_add', methods: ['GET', 'POST'])]
-    public function add(Request $request): Response
-    {
-        $author = new Author();
-        $form = $this->createForm(AuthorType::class, $author);
+public function add(Request $request): Response
+{
+    $author = new Author();
+    $form = $this->createForm(AuthorType::class, $author);
+    $form->handleRequest($request);
 
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->entityManager->persist($author); // Use persist to save
-            $this->entityManager->flush();
+    if ($form->isSubmitted() && $form->isValid()) {
+        $file = $form->get('picture')->getData();
 
-            return $this->redirectToRoute('list_authors');
+        if ($file) {
+            $newFilename = uniqid() . '.' . $file->guessExtension();
+
+            try {
+                // Move the uploaded file to the specified directory for authors
+                $file->move(
+                    $this->getParameter('authors_pictures_directory'), 
+                    $newFilename
+                );
+                $author->setPicture($newFilename);
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Error uploading file: ' . $e->getMessage());
+            }
+        } else {
+            $this->addFlash('error', 'No file was uploaded.');
         }
 
-        return $this->render('author/add.html.twig', [
-            'form' => $form->createView(),
-        ]);
+        $this->entityManager->persist($author);
+        $this->entityManager->flush();
+
+        return $this->redirectToRoute('list_authors');
     }
+
+    return $this->render('author/add.html.twig', [
+        'form' => $form->createView(),
+    ]);
+}
+
+
+#[Route('/goToAuthors', name: 'goToAuthors')]
+public function goToAuthors(): Response
+{
+    return $this->redirectToRoute('list_authors');
+}
+
 
     #[Route('/author/edit/{id}', name: 'author_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function edit(Request $request, int $id): Response
@@ -134,31 +162,5 @@ class AuthorController extends AbstractController
         ]);
     }
 
-    #[Route('/author/{id}/books/add', name: 'author_add_book', methods: ['GET', 'POST'])]
-    public function books(int $id, Request $request): Response
-    {
-        $author = $this->authorRepository->find($id);
-        if (!$author) {
-            throw $this->createNotFoundException('Author not found');
-        }
-
-        $book = new Livre();
-        $form = $this->createForm(BookType::class, $book);
-
-        // Handle the form submission
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            // Set the author for the book
-            $book->setAuthor($author); // Assuming you have set up a relationship
-            $this->entityManager->persist($book);
-            $this->entityManager->flush();
-
-            return $this->redirectToRoute('author_books', ['id' => $id]);
-        }
-
-        return $this->render('author/books.html.twig', [
-            'form' => $form->createView(),
-            'author' => $author, // Pass the author to the template if needed
-        ]);
-    }
+    
 }
